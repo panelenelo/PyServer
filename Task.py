@@ -1,4 +1,6 @@
 #Task class
+from pydantic import BaseModel
+from typing import Optional,List
 
 class Task:
     def __init__(self, id: int,title: str, description: str, is_complete: bool):
