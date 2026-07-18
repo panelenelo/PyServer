@@ -1,6 +1,8 @@
-from fastapi import FastAPI
-import routes
-from Task import Task
+def main():
+    print("Hello from pyserver!")
 
-app = FastAPI()
 
+
+
+if __name__ == "__main__":
+    main()
