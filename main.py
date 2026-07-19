@@ -9,7 +9,7 @@ my_posts = [{"id":1, "title": "First Post", "content":"First Content"}]
 
 @app.get("/")
 async def root():
-    return {"message": "Carm"}
+    return {"Home": "Page"}
 
 @app.get("/posts")
 async def getPosts():
@@ -22,6 +22,9 @@ async def postCreatePosts(payload: Post):
     my_posts.append(post_dict)
     return {"data": my_posts}
 
+@app.get("/posts/{id}")
+async def getPostById(id: int):
+    return {"post detail": f"Post {id}"}
 
 
 
