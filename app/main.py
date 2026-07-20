@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Response, status, HTTPException
 from fastapi.params import Body
-from model.model import Post
+from app.model.model import Post
 from random import randrange
 
 app = FastAPI()
@@ -31,7 +31,7 @@ def deletePostById(id: int):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @app.put("/posts/{id}", status_code=status.HTTP_206_PARTIAL_CONTENT)
-def putPostById(id: int):
+def putPostById(id: int, post: Post):
     return Response(status_code=status.HTTP_206_PARTIAL_CONTENT)
 
 
