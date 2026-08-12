@@ -1,10 +1,10 @@
-from fastapi import FastAPI, Response, status, HTTPException
-from fastapi.params import Body
-from app.model.model import Post
-from random import randrange
-
+from fastapi import FastAPI
+from app.routers.users import router as user_router
+from app.routers.posts import router as post_router
 app = FastAPI()
 
+app.include_router(user_router)
+app.include_router(post_router)
 
 @app.get("/")
 async def root():
