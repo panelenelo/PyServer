@@ -10,6 +10,8 @@ async def getUsers():
     return {"data": "Users"}
 
 @router.get("/singup")
+async def getCreateUser():
+    return {"data": "Creation page"}
 
 @router.post("/signup")
 async def postCreateUser(user: User):
