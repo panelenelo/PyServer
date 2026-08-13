@@ -7,14 +7,13 @@ router = APIRouter()
 
 @router.get("/posts")
 async def getPosts():
-    return {"data": my_posts}
+    return {"data": "The posts"}
 
 @router.post("/posts", status_code=status.HTTP_201_CREATED)
 async def postCreatePosts(payload: Post):
     post_dict = payload.model_dump()
     post_dict["id"] = randrange(0, 1000000)
-    my_posts.append(post_dict)
-    return {"data": my_posts}
+    return {"data": post_dict}
 
 @router.get("/posts/{id}")
 async def getPostById(id: int):
