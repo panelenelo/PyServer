@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Response, status, HTTPException, APIRouter
 from fastapi.params import Body
-from app.model.model import Post
+from app.model.model import PostsCreate
 from random import randrange
 
 router = APIRouter()
@@ -10,9 +10,8 @@ async def getPosts():
     return {"data": "The posts"}
 
 @router.post("/posts", status_code=status.HTTP_201_CREATED)
-async def postCreatePosts(payload: Post):
+async def postCreatePosts(payload: PostsCreate):
     post_dict = payload.model_dump()
-    post_dict["id"] = randrange(0, 1000000)
     return {"data": post_dict}
 
 @router.get("/posts/{id}")
@@ -24,5 +23,5 @@ async def deletePostById(id: int):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.put("/posts/{id}", status_code=status.HTTP_206_PARTIAL_CONTENT)
-async def putPostById(id: int, post: Post):
+async def putPostById(id: int, post: PostsCreate):
     return Response(status_code=status.HTTP_206_PARTIAL_CONTENT)
