@@ -2,6 +2,7 @@ from fastapi import FastAPI, Response, status, HTTPException, APIRouter
 from fastapi.params import Body
 from app.model.model import PostsCreate
 from random import randrange
+from app.database import get_session
 
 router = APIRouter()
 
