@@ -9,6 +9,7 @@ router = APIRouter()
 
 @router.get("/users")
 async def getUsers():
+    
     return {"data": "Users"}
 
 @router.get("/singup")
