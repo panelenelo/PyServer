@@ -1,4 +1,4 @@
 # PyServer
 
-Repo for studying with FastAPI
+Repo for studying with FastAPI and SQLModel
 
