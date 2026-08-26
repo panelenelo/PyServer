@@ -4,7 +4,9 @@ from pydantic import EmailStr
 from datetime import datetime
 
 
-# Post related
+#
+#  Post related
+#
 class PostsBase(SQLModel):
     title:      str
     content:    str
@@ -22,7 +24,9 @@ class PostsRead(PostsBase):
     created: datetime
 
 
+# 
 # User related
+#
 class UsersBase(SQLModel):
     name:       str
     age:        int
