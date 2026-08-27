@@ -1,8 +1,9 @@
-from fastapi import FastAPI, Response, status, HTTPException, APIRouter
+from fastapi import FastAPI, Response, status, HTTPException, APIRouter, Depends
 from fastapi.params import Body
 from app.model.model import PostsCreate
 from random import randrange
-from app.database import get_session
+from app.database import get_session, insert_post
+from sqlmodel import Session
 
 router = APIRouter()
 
@@ -11,9 +12,9 @@ async def getPosts():
     return {"data": "The posts"}
 
 @router.post("/posts", status_code=status.HTTP_201_CREATED)
-async def postCreatePosts(payload: PostsCreate):
-    post_dict = payload.model_dump()
-    return {"data": post_dict}
+async def postCreatePosts(payload: PostsCreate, session: Session=Depends(get_session)):
+    new_post = insert_post(payload, session)
+    return {"data": new_post}
 
 @router.get("/posts/{id}")
 async def getPostById(id: int):

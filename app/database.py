@@ -27,3 +27,21 @@ def create_db_and_tables():
 def get_session():
     with Session(engine) as session:
         yield session
+
+#
+## Post functions
+#
+def insert_post(post: model.PostsCreate, session: Session):
+    new_post = model.Posts(**post.model_dump())
+
+    session.add(new_post)
+    session.commit()
+    session.refresh(new_post)
+
+    return new_post
+
+
+
+#
+## User functions
+#
