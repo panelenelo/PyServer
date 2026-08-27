@@ -14,7 +14,7 @@ class PostsBase(SQLModel):
     rating:     Optional[int] = None
 
 class Posts(PostsBase, table=True):
-    id:         int = Field(index=True, primary_key=True)
+    id:         int | None = Field(default=None, index=True, primary_key=True)
     created:    datetime = Field(default_factory=datetime.now)
 
 class PostsCreate(PostsBase):
