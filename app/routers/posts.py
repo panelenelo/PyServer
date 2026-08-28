@@ -36,7 +36,19 @@ async def postCreatePosts(payload: PostsCreate, session: Session=Depends(get_ses
     return {"Data": new_post}
 
 @router.delete("/posts/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def deletePostById(id: int):
+async def deletePostById(id: int, session: Session=Depends(get_session)):
+    post = session.get(Posts, id)
+    if not post:
+            raise HTTPException(
+                status_code=404,
+                detail="Post not found"
+            )
+    session.delete(post)
+    session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+@router.delete("/posts/all", status_code=status.HTTP_204_NO_CONTENT)
+async def deletePostAll(id: int):
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.put("/posts/{id}", status_code=status.HTTP_206_PARTIAL_CONTENT)
