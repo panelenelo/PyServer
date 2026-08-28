@@ -1,17 +1,26 @@
 from fastapi import FastAPI, Response, status, HTTPException, APIRouter, Depends
 from fastapi.params import Body
-from app.model.model import PostsCreate, Posts
+from app.model.model import PostsCreate, Posts, PostsRead
 from random import randrange
 from app.database import get_session, insert_post
-from sqlmodel import Session
+from sqlmodel import Session, select, desc
 
 router = APIRouter()
 
+#get last 5 created posts
 @router.get("/posts")
-async def getPosts():
-    return {"Data": "The posts"}
+async def getPosts(session: Session=Depends(get_session)):
+    statement = (
+        select(Posts)
+        .order_by(desc(Posts.created))
+        .limit(5)
+    )
+    results = session.exec(statement)
+    posts = results.all()
 
-@router.get("/posts/{id}")
+    return posts
+
+@router.get("/posts/{id}", response_model=PostsRead)
 async def getPostById(id: int, session: Session=Depends(get_session)):
     post = session.get(Posts, id)
     if not post:
@@ -19,7 +28,7 @@ async def getPostById(id: int, session: Session=Depends(get_session)):
             status_code=404,
             detail="Post not found"
         )
-    return {"Data": post}
+    return post
 
 @router.post("/posts", status_code=status.HTTP_201_CREATED)
 async def postCreatePosts(payload: PostsCreate, session: Session=Depends(get_session)):
