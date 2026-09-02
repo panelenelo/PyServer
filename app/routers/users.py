@@ -21,9 +21,19 @@ async def getUsers(session: Session=Depends(get_session)):
     
     return users
 
+@router.get("/users/{id}", response_model=UsersRead)
+async def getUserById(id: int, session: Session=Depends(get_session)):
+    user = session.get(Users, id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+    return user
+
 @router.get("/signup")
 async def getCreateUser():
-    return {"data": "Creation page"}
+    return {"Data": "Creation page"}
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def postCreateUser(user: UsersCreate):

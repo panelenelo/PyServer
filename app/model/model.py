@@ -28,12 +28,13 @@ class PostsRead(PostsBase):
 # User related
 #
 class UsersBase(SQLModel):
-    email:      EmailStr = Field(index=True, primary_key=True)
+    email:      EmailStr = Field(index=True, unique=True)
     name:       str
     age:        int
     interest:   str | None = None
 
 class Users(UsersBase, table=True):
+    id:         int | None = Field(default=None, index=True, primary_key=True)
     created:    datetime = Field(default_factory=datetime.now)
     password:   str
 
@@ -41,5 +42,6 @@ class UsersCreate(UsersBase):
     password:   str
 
 class UsersRead(UsersBase):
-    created: datetime
+    created:    datetime
+    id:         int
 
