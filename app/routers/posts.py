@@ -74,5 +74,4 @@ async def postCreatePosts(session: Session=Depends(get_session)):
         new_post = Posts(title="A name", content="The story of a person with a name, whose name is remembered with happines, happiness that it will never be heard again")
         insert_post(new_post, session)
         break
-
     return {"Data": new_post}
