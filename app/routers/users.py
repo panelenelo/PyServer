@@ -7,6 +7,7 @@ from sqlmodel import Session, select, desc, delete
 
 router = APIRouter()
 
+
 # get last 5 created users
 @router.get("/users")
 async def getUsers(session: Session=Depends(get_session)):
