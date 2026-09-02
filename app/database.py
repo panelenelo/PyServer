@@ -45,3 +45,11 @@ def insert_post(post: model.PostsCreate, session: Session):
 #
 ## User functions
 #
+def insert_user(user: model.UsersCreate, session: Session):
+    new_user = model.Users(**user.model_dump())
+
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+
+    return new_user

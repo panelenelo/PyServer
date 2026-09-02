@@ -11,7 +11,7 @@ class PostsBase(SQLModel):
     title:      str
     content:    str
     published:  bool = True
-    rating:     Optional[int] = None
+    rating:     int | None = None
 
 class Posts(PostsBase, table=True):
     id:         int | None = Field(default=None, index=True, primary_key=True)
@@ -28,16 +28,18 @@ class PostsRead(PostsBase):
 # User related
 #
 class UsersBase(SQLModel):
+    email:      EmailStr = Field(index=True, primary_key=True)
     name:       str
     age:        int
-    email:      EmailStr = Field(index=True, primary_key=True)
-    interest:   str
+    interest:   str | None = None
 
 class Users(UsersBase, table=True):
     created:    datetime = Field(default_factory=datetime.now)
+    password:   str
 
 class UsersCreate(UsersBase):
-    pass
+    password:   str
 
 class UsersRead(UsersBase):
     created: datetime
+
