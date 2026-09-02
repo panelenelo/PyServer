@@ -55,3 +55,9 @@ async def postFillUsers(session: Session=Depends(get_session)):
     # endregion
     return {"Data": new_user}
 
+@router.delete("/testing/reset-users", status_code=status.HTTP_204_NO_CONTENT)
+async def deleteUsersAll(session: Session=Depends(get_session)):
+    session.exec(delete(Users))
+    session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
