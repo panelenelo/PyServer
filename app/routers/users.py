@@ -40,6 +40,20 @@ async def postCreateUser(user: UsersCreate):
     user_obj = user.model_dump()
     return {"User": user_obj}
 
+@router.delete("/users/{id}", status_code=status.HTTP_204_NO_CONTENT)
+async def deleteUserById(id: int, session: Session=Depends(get_session)):
+    user = session.get(Users, id)
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )
+    session.delete(user)
+    session.commit()
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+
 # Testing routes
 @router.post("/testing/fill-users", status_code=status.HTTP_201_CREATED)
 async def postFillUsers(session: Session=Depends(get_session)):
