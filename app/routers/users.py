@@ -3,6 +3,7 @@ from fastapi.params import Body
 from app.model.model import UsersCreate, Users, UsersRead
 from app.database import get_session, insert_user
 from sqlmodel import Session, select, desc, delete
+from app.auth_utils import passHashing
 
 
 router = APIRouter()
@@ -36,9 +37,13 @@ async def getCreateUser():
     return {"Data": "Creation page"}
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
-async def postCreateUser(user: UsersCreate):
-    user_obj = user.model_dump()
-    return {"User": user_obj}
+async def postCreateUser(user: UsersCreate, session: Session=Depends(get_session)):
+    new_user = user.model_dump()
+    hashed = passHashing(new_user["password"])
+    new_user["password"] = hashed
+    insert_user(UsersCreate(**new_user), session)
+        
+    return {"User": new_user}
 
 @router.delete("/users/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def deleteUserById(id: int, session: Session=Depends(get_session)):
