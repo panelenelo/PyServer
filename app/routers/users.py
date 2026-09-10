@@ -64,12 +64,20 @@ async def deleteUserById(id: int, session: Session=Depends(get_session)):
 async def postFillUsers(session: Session=Depends(get_session)):
     # region Creating different users
     new_user = UsersCreate(email="gabelado@mango.br", name="Gabo", age=45, interest="Mangos", password="two2s")
+    hashed = passHashing(new_user.password)
+    new_user.password = hashed
     insert_user(new_user, session)
     new_user = UsersCreate(email="tradeu@mango.br", name="Tradeu", age=17, interest="Pines", password="Roubar")
+    hashed = passHashing(new_user.password)
+    new_user.password = hashed
     insert_user(new_user, session)
     new_user = UsersCreate(email="razeli@mango.br", name="Razeli", age=56, interest="kilimanjo", password="games")
+    hashed = passHashing(new_user.password)
+    new_user.password = hashed
     insert_user(new_user, session)
     new_user = UsersCreate(email="spaghetthi@mango.br", name="Spaghett", age=27, interest="Pesto", password="wahtc")
+    hashed = passHashing(new_user.password)
+    new_user.password = hashed
     insert_user(new_user, session)
     # endregion
     return {"Data": new_user}
