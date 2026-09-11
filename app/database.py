@@ -1,7 +1,9 @@
 import os
 from dotenv import load_dotenv
-from sqlmodel import Session, create_engine, SQLModel
+from sqlmodel import Session, create_engine, SQLModel, select
+from app import custom_exceptions
 from app.model import model
+
 
 # Load the .env
 load_dotenv()
@@ -54,4 +56,14 @@ def insert_user(user: model.UsersCreate, session: Session):
 
     return new_user
 
-#def get_user_pass(email: )
+def get_user_pass(email: str, session: Session) -> str:
+    statement = (
+        select(model.Users)
+        .where(model.Users.email == email)
+    )
+    result = session.exec(statement)
+    user = result.one_or_none()
+    if user is None:
+        raise custom_exceptions.EmailNotInDatabase
+    else:
+        return user.password

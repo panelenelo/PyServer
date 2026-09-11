@@ -45,3 +45,6 @@ class UsersRead(UsersBase):
     created:    datetime
     id:         int
 
+class UsersLogin(SQLModel):
+    email:      EmailStr
+    password:   str

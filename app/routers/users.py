@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Response, status, HTTPException, APIRouter, Depends
 from fastapi.params import Body
-from app.model.model import UsersCreate, Users, UsersRead
-from app.database import get_session, insert_user
+from app.model.model import UsersCreate, Users, UsersRead, UsersLogin
+from app.database import get_session, insert_user, get_user_pass
 from sqlmodel import Session, select, desc, delete
-from app.auth_utils import passHashing
+from app import auth_utils
+from app import custom_exceptions
+from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError
 
 
 router = APIRouter()
@@ -19,7 +21,6 @@ async def getUsers(session: Session=Depends(get_session)):
     )
     results = session.exec(statement)
     users = results.all()
-    
     return users
 
 @router.get("/users/{id}", response_model=UsersRead)
@@ -39,7 +40,7 @@ async def getCreateUser():
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def postCreateUser(user: UsersCreate, session: Session=Depends(get_session)):
     new_user = user.model_dump()
-    hashed = passHashing(new_user["password"])
+    hashed = auth_utils.passHashing(new_user["password"])
     new_user["password"] = hashed
     insert_user(UsersCreate(**new_user), session)
         
@@ -64,19 +65,19 @@ async def deleteUserById(id: int, session: Session=Depends(get_session)):
 async def postFillUsers(session: Session=Depends(get_session)):
     # region Creating different users
     new_user = UsersCreate(email="gabelado@mango.br", name="Gabo", age=45, interest="Mangos", password="two2s")
-    hashed = passHashing(new_user.password)
+    hashed = auth_utils.passHashing(new_user.password)
     new_user.password = hashed
     insert_user(new_user, session)
     new_user = UsersCreate(email="tradeu@mango.br", name="Tradeu", age=17, interest="Pines", password="Roubar")
-    hashed = passHashing(new_user.password)
+    hashed = auth_utils.passHashing(new_user.password)
     new_user.password = hashed
     insert_user(new_user, session)
     new_user = UsersCreate(email="razeli@mango.br", name="Razeli", age=56, interest="kilimanjo", password="games")
-    hashed = passHashing(new_user.password)
+    hashed = auth_utils.passHashing(new_user.password)
     new_user.password = hashed
     insert_user(new_user, session)
     new_user = UsersCreate(email="spaghetthi@mango.br", name="Spaghett", age=27, interest="Pesto", password="wahtc")
-    hashed = passHashing(new_user.password)
+    hashed = auth_utils.passHashing(new_user.password)
     new_user.password = hashed
     insert_user(new_user, session)
     # endregion
@@ -88,3 +89,32 @@ async def deleteUsersAll(session: Session=Depends(get_session)):
     session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
+@router.get("/testing/pass-verify")
+async def getTestVerifyPass(payload: UsersLogin, session: Session=Depends(get_session)):
+    user = payload.model_dump()
+    try:
+        password = get_user_pass(payload.email, session)
+        verification = auth_utils.verifyPass(password, payload.password)
+        #.check_needs_rehash()
+    except custom_exceptions.EmailNotInDatabase:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found"
+        )    
+    except VerifyMismatchError:
+        raise HTTPException(
+            status_code=404,
+            detail="Email or password wrong"
+        )
+    except InvalidHashError:
+        raise HTTPException(
+            status_code=404,
+            detail="Invalid Hash Error"
+        )
+    except VerificationError:
+        raise HTTPException(
+            status_code=404,
+            detail="Verification Error"
+        )
+    else:
+        return {"Verification": "OK"}
