@@ -93,8 +93,8 @@ async def deleteUsersAll(session: Session=Depends(get_session)):
 async def getTestVerifyPass(payload: UsersLogin, session: Session=Depends(get_session)):
     user = payload.model_dump()
     try:
-        password = get_user_pass(payload.email, session)
-        verification = auth_utils.verifyPass(password, payload.password)
+        stored_password = get_user_pass(payload.email, session)
+        verification = auth_utils.verifyPass(stored_password, payload.password)
         #.check_needs_rehash()
     except custom_exceptions.EmailNotInDatabase:
         raise HTTPException(
