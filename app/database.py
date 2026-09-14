@@ -56,7 +56,7 @@ def insert_user(user: model.UsersCreate, session: Session):
 
     return new_user
 
-def get_user_pass(email: str, session: Session) -> str:
+def get_user_with_email(email: str, session: Session) -> model.Users:
     statement = (
         select(model.Users)
         .where(model.Users.email == email)
@@ -65,5 +65,13 @@ def get_user_pass(email: str, session: Session) -> str:
     user = result.one_or_none()
     if user is None:
         raise custom_exceptions.EmailNotInDatabase
+    else:
+        return user    
+
+def get_user_pass(email: str, session: Session) -> str:
+    try:
+        user = get_user_with_email(email, session)
+    except custom_exceptions.EmailNotInDatabase:
+        raise
     else:
         return user.password

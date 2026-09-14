@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Response, status, HTTPException, APIRouter, Depends
 from fastapi.params import Body
 from app.model.model import UsersCreate, Users, UsersRead, UsersLogin
-from app.database import get_session, insert_user, get_user_pass
+from app.database import get_session, insert_user, get_user_pass, get_user_with_email
 from sqlmodel import Session, select, desc, delete
 from app import auth_utils
 from app import custom_exceptions
@@ -40,11 +40,18 @@ async def getCreateUser():
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def postCreateUser(user: UsersCreate, session: Session=Depends(get_session)):
     new_user = user.model_dump()
-    hashed = auth_utils.passHashing(new_user["password"])
+    hashed = auth_utils.passHashing(user.password)
     new_user["password"] = hashed
-    insert_user(UsersCreate(**new_user), session)
-        
-    return {"User": new_user}
+    try:
+        get_user_with_email(user.email, session)
+    except custom_exceptions.EmailNotInDatabase:
+        insert_user(UsersCreate(**new_user), session)
+        return {"User": new_user}
+    else:
+        raise HTTPException(
+            status_code=409,
+            detail="Email already in use"
+        )
 
 @router.delete("/users/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def deleteUserById(id: int, session: Session=Depends(get_session)):
