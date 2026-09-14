@@ -33,10 +33,6 @@ async def getUserById(id: int, session: Session=Depends(get_session)):
         )
     return user
 
-@router.get("/signup")
-async def getCreateUser():
-    return {"Data": "Creation page"}
-
 @router.post("/signup", status_code=status.HTTP_201_CREATED)
 async def postCreateUser(user: UsersCreate, session: Session=Depends(get_session)):
     new_user = user.model_dump()
@@ -53,6 +49,34 @@ async def postCreateUser(user: UsersCreate, session: Session=Depends(get_session
             detail="Email already in use"
         )
 
+@router.post("/signin")
+async def postSignIn(r_user: UsersLogin, session: Session=Depends(get_session)):
+    try:
+        d_user = get_user_with_email(r_user.email, session)
+        auth_utils.verifyPass(d_user.password, r_user.password)
+    except custom_exceptions.EmailNotInDatabase:
+        raise HTTPException(
+            status_code=404,
+            detail="Email or Password wrong"
+        )
+    except VerifyMismatchError:
+        raise HTTPException(
+            status_code=404,
+            detail="Email or password wrong"
+        )
+    except InvalidHashError:
+        raise HTTPException(
+            status_code=404,
+            detail="Invalid Hash Error"
+        )
+    except VerificationError:
+        raise HTTPException(
+            status_code=404,
+            detail="Verification Error"
+        )    
+    else:
+        return {"Data": d_user}
+
 @router.delete("/users/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def deleteUserById(id: int, session: Session=Depends(get_session)):
     user = session.get(Users, id)
@@ -64,6 +88,7 @@ async def deleteUserById(id: int, session: Session=Depends(get_session)):
     session.delete(user)
     session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
 
 
 
