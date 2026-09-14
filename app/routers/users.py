@@ -67,6 +67,7 @@ async def deleteUserById(id: int, session: Session=Depends(get_session)):
 
 
 
+
 # Testing routes
 @router.post("/testing/fill-users", status_code=status.HTTP_201_CREATED)
 async def postFillUsers(session: Session=Depends(get_session)):
