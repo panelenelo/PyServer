@@ -4,5 +4,8 @@
 __pycache__/
 test.py
 
-# Environment files
+# Configuration Files
+redis.conf
+
+# Environment Files
 .env

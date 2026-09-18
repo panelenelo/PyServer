@@ -1,9 +1,11 @@
 # include:
 #   - path: ./postgres.yaml
+#    environment:
+#      - REDIS_URL=redis://:your_strong_password@redis:6379
 services:
   postgres:
     image: postgres:14-alpine
-    restart: always
+    restart: unless-stopped
     shm_size: 128mb
     environment:
       - POSTGRES_DB=${PGRS_DB}
@@ -19,7 +21,24 @@ services:
       timeout: 3s
       retries: 5
       start_period: 10s
+  
+  redis:
+    image: redis:8.2-alpine
+    ports:
+    - "${REDIS_PORT}:6379"
+    volumes:
+    - ./redis.conf:/usr/local/etc/redis/redis.conf
+    - redis-data:/data
+    command: redis-server /usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASS}", "PING"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
 
 volumes:
   postgres-data:
+  redis-data:
 
