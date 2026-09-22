@@ -4,6 +4,8 @@ from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHas
 from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 
+# Create a single global PasswordHasher obj
+# and use it in the functions.
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
