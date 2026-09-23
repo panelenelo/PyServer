@@ -48,3 +48,12 @@ class UsersRead(UsersBase):
 class UsersLogin(SQLModel):
     email:      EmailStr
     password:   str
+
+
+#
+## Auth related
+#
+class Token(SQLModel):
+    access_token:  str
+    refresh_token: str
+    token_type: str = "bearer"
