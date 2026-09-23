@@ -49,6 +49,7 @@ def create_token(data: dict, duration: timedelta) -> str:
 
 def create_refresh_token(data: dict) -> str:
     refresh_token = create_token({**data, "type":"refresh"}, timedelta(days=refresh_exp))
+    # The refresh token should be stored in redis.
     return refresh_token
 
 def create_access_token(data: dict) -> str:
