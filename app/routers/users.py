@@ -1,11 +1,12 @@
 from fastapi import FastAPI, Response, status, HTTPException, APIRouter, Depends
 from fastapi.params import Body
-from app.model.model import UsersCreate, Users, UsersRead, UsersLogin
+from app.model.model import UsersCreate, Users, UsersRead, UsersLogin, Token
 from app.database import get_session, insert_user, get_user_pass, get_user_with_email
 from sqlmodel import Session, select, desc, delete
 from app import auth_utils
 from app import custom_exceptions
 from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError
+from app.auth_utils import create_access_token, create_refresh_token
 
 
 router = APIRouter()
@@ -75,7 +76,19 @@ async def postSignIn(r_user: UsersLogin, session: Session=Depends(get_session)):
             detail="Verification Error"
         )    
     else:
-        return {"Data": d_user}
+        data = {}
+        iss = "127.0.0.1"
+        sub = d_user.id
+        admin = d_user.admin
+        data.update({
+            "iss":iss,
+            "sub":sub,
+            "admin":admin,
+        })
+        refresh_token = create_refresh_token(data=data)
+        access_token = create_access_token(data=data)
+        token = Token(access_token=access_token, refresh_token=refresh_token)
+        return token
 
 @router.delete("/users/{id}", status_code=status.HTTP_204_NO_CONTENT)
 async def deleteUserById(id: int, session: Session=Depends(get_session)):

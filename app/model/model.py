@@ -37,6 +37,7 @@ class Users(UsersBase, table=True):
     id:         int | None = Field(default=None, index=True, primary_key=True)
     created:    datetime = Field(default_factory=datetime.now)
     password:   str
+    admin:      bool = False
 
 class UsersCreate(UsersBase):
     password:   str

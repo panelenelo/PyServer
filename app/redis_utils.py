@@ -22,5 +22,7 @@ def create_redis_pool() -> aredis.BlockingConnectionPool:
 def create_redis_client(pool: aredis.BlockingConnectionPool) -> aredis.Redis:
     return aredis.Redis(connection_pool=pool)
 
+
+# Return the redis client
 async def get_redis(request: Request) -> aredis.Redis:
     return request.app.state.redis
