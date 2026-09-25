@@ -1,3 +1,4 @@
+import redis.asyncio
 from fastapi import FastAPI, Response, status, HTTPException, APIRouter, Depends
 from fastapi.params import Body
 from app.model.model import UsersCreate, Users, UsersRead, UsersLogin, Token
@@ -7,6 +8,7 @@ from app import auth_utils
 from app import custom_exceptions
 from argon2.exceptions import VerifyMismatchError, VerificationError, InvalidHashError
 from app.auth_utils import create_access_token, create_refresh_token
+from app.redis_utils import get_redis
 
 
 router = APIRouter()
@@ -51,7 +53,10 @@ async def postCreateUser(user: UsersCreate, session: Session=Depends(get_session
         )
 
 @router.post("/signin")
-async def postSignIn(r_user: UsersLogin, session: Session=Depends(get_session)):
+async def postSignIn(r_user: UsersLogin,
+                     session: Session=Depends(get_session),
+                     redis: redis.asyncio.Redis = Depends(get_redis)):
+    
     try:
         d_user = get_user_with_email(r_user.email, session)
         auth_utils.verifyPass(d_user.password, r_user.password)
@@ -85,7 +90,7 @@ async def postSignIn(r_user: UsersLogin, session: Session=Depends(get_session)):
             "sub":sub,
             "admin":admin,
         })
-        refresh_token = create_refresh_token(data=data)
+        refresh_token = create_refresh_token(data=data, redis=redis)
         access_token = create_access_token(data=data)
         token = Token(access_token=access_token, refresh_token=refresh_token)
         return token
