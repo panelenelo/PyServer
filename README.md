@@ -1,4 +1,5 @@
 # PyServer
 
-Repo for studying FastAPI and SQLModel.
+Repo for studying FastAPI, SQLModel and Redis.
+
 
